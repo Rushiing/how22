@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "How22 资源聚合",
+  title: "薅秃秃",
   description: "基于 Notion 的资源信息聚合站点",
 };
 

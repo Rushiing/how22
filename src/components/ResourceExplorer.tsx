@@ -46,23 +46,18 @@ export function ResourceExplorer({ items }: Props) {
       ) : filtered.length === 0 ? (
         <p className="text-sm text-zinc-500">没有符合「{query.trim()}」的文章。</p>
       ) : (
-        <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+        <ul className="grid list-none grid-cols-1 items-start gap-4 md:grid-cols-3">
           {filtered.map((item) => (
-            <article
-              key={item.id}
-              className="mb-4 break-inside-avoid"
-            >
+            <li key={item.id} className="min-w-0">
               <Link
-                href={item.notionUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/p/${item.id}`}
                 className="block rounded-lg border border-zinc-200/90 bg-zinc-50/50 p-4 transition-colors hover:border-zinc-300 hover:bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/30 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60"
               >
                 <h2 className="text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100">
                   {item.title}
                 </h2>
                 {item.excerpt ? (
-                  <p className="mt-2 line-clamp-4 text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-2 break-words text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
                     {item.excerpt}
                   </p>
                 ) : null}
@@ -73,9 +68,9 @@ export function ResourceExplorer({ items }: Props) {
                   {item.lastEdited.slice(0, 10)}
                 </time>
               </Link>
-            </article>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

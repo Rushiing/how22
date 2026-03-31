@@ -10,9 +10,9 @@ export default async function Home() {
   return (
     <div className="flex min-h-full flex-col">
       <header className="shrink-0">
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-2 sm:px-6 sm:pt-14">
-          <span className="text-[13px] font-medium tracking-tight text-zinc-800 dark:text-zinc-200">
-            How22
+        <div className="mx-auto flex max-w-6xl justify-end px-4 pt-10 pb-3 sm:px-6 sm:pt-14 sm:pb-4">
+          <span className="text-xl font-semibold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100">
+            薅秃秃
           </span>
         </div>
       </header>

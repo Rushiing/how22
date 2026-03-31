@@ -5,8 +5,6 @@ function plainFromRichText(items: RichTextItemResponse[]): string {
   return items.map((t) => t.plain_text).join("");
 }
 
-const EXCERPT_MAX = 120;
-
 /** 汇总属性中的纯文本，用于摘要与站内搜索（不含页面正文块，仅数据库属性） */
 export function buildArticlePreview(page: PageObjectResponse): {
   title: string;
@@ -23,7 +21,7 @@ export function buildArticlePreview(page: PageObjectResponse): {
         const t = plainFromRichText(prop.rich_text).trim();
         if (t) {
           chunks.push(t);
-          if (!excerpt) excerpt = t.length > EXCERPT_MAX ? `${t.slice(0, EXCERPT_MAX)}…` : t;
+          if (!excerpt) excerpt = t;
         }
         break;
       }
