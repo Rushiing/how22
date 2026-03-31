@@ -1,4 +1,5 @@
 import { ResourceExplorer } from "@/components/ResourceExplorer";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getResources } from "@/lib/resources";
 
 /** 运行时从 Notion 拉取，避免构建时写死空状态 */
@@ -10,7 +11,8 @@ export default async function Home() {
   return (
     <div className="flex min-h-full flex-col">
       <header className="shrink-0">
-        <div className="mx-auto flex max-w-6xl justify-end px-4 pt-10 pb-3 sm:px-6 sm:pt-14 sm:pb-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-10 pb-3 sm:px-6 sm:pt-14 sm:pb-4">
+          <ThemeToggle />
           <span className="text-xl font-semibold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100">
             薅秃秃
           </span>

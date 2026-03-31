@@ -36,6 +36,9 @@ function normalizeRecommendType(value: string): string {
 function normalizeSection(value: string): string {
   const v = value.trim().toLowerCase().replace(/\s+/g, "");
   if (!v) return "";
+  if (v === "九块九专区" || v === "9块9专区" || v === "9.9专区" || v === "99专区") {
+    return "九块九专区";
+  }
   if (v === "agi大神推荐" || v === "agi推荐" || v === "agi") return "AGI大神推荐";
   if (v === "最新优惠信息" || v === "优惠信息" || v === "优惠" || v === "deals") {
     return "最新优惠信息";

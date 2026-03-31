@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleMarkdown } from "@/components/ArticleMarkdown";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadArticleIfAllowed } from "@/lib/page-access";
 
 export const dynamic = "force-dynamic";
@@ -37,19 +38,22 @@ export default async function ArticlePage({
   return (
     <div className="flex min-h-full flex-col">
       <header className="shrink-0 border-b border-zinc-200/80 dark:border-zinc-800/80">
-        <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link
             href="/"
             className="shrink-0 text-[13px] text-zinc-500 transition hover:text-zinc-900 dark:hover:text-zinc-300"
           >
             ← 返回
           </Link>
-          <Link
-            href="/"
-            className="text-xl font-semibold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100"
-          >
-            薅秃秃
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="text-xl font-semibold tracking-tight text-zinc-800 sm:text-2xl dark:text-zinc-100"
+            >
+              薅秃秃
+            </Link>
+          </div>
         </div>
       </header>
 

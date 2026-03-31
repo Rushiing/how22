@@ -28,12 +28,16 @@ export function ResourceExplorer({ items }: Props) {
     return visibleItems.filter((item) => item.searchText.includes(q));
   }, [items, query]);
 
-  const { codingPlan, tokens, latestDeals } = useMemo(() => {
+  const { nineNineZone, codingPlan, tokens, latestDeals } = useMemo(() => {
+    const nineNine = filtered.filter((item) => item.section === "九块九专区");
     const agi = filtered.filter((item) => item.section === "AGI大神推荐");
     const codingPlanItems = agi.filter((item) => item.recommendType === "Coding Plan");
     const tokenItems = agi.filter((item) => item.recommendType === "Tokens");
-    // 分区三态：AGI大神推荐 / 最新优惠信息 / 空。空分区归入“最新优惠信息”。
-    const latest = filtered.filter((item) => item.section !== "AGI大神推荐");
+    // 分区：九块九专区 / AGI大神推荐 / 最新优惠信息 / 空
+    // 空分区归入“最新优惠信息”。
+    const latest = filtered.filter(
+      (item) => item.section !== "AGI大神推荐" && item.section !== "九块九专区",
+    );
 
     const byWeightAndDate = (a: ResourceItem, b: ResourceItem) => {
       const w = b.pinWeight - a.pinWeight;
@@ -48,6 +52,7 @@ export function ResourceExplorer({ items }: Props) {
     };
 
     return {
+      nineNineZone: [...nineNine].sort(byDealDate),
       codingPlan: [...codingPlanItems].sort(byWeightAndDate),
       tokens: [...tokenItems].sort(byWeightAndDate),
       latestDeals: [...latest].sort(byDealDate),
@@ -63,20 +68,20 @@ export function ResourceExplorer({ items }: Props) {
         <li key={item.id} className="relative mb-3 break-inside-avoid min-w-0">
           {item.badgeText ? (
             <div className="pointer-events-none absolute right-3 top-3 z-20">
-              <span className="block rounded-full border border-white/20 bg-gradient-to-r from-slate-600 to-slate-500 px-2.5 py-1 text-[10px] font-semibold leading-none tracking-wide text-white shadow-[0_6px_14px_rgba(15,23,42,0.35)]">
+              <span className="block rounded-full border border-slate-200 bg-gradient-to-r from-slate-100 to-slate-200 px-2.5 py-1 text-[10px] font-semibold leading-none tracking-wide text-slate-700 shadow-[0_4px_10px_rgba(148,163,184,0.28)] dark:border-white/20 dark:bg-gradient-to-r dark:from-slate-600 dark:to-slate-500 dark:text-white dark:shadow-[0_6px_14px_rgba(15,23,42,0.35)]">
                 {item.badgeText}
               </span>
             </div>
           ) : showEndingSoon ? (
             <div className="pointer-events-none absolute right-3 top-3 z-20">
-              <span className="block rounded-full border border-amber-200/40 bg-gradient-to-r from-amber-500 to-amber-600 px-2.5 py-1 text-[10px] font-semibold leading-none tracking-wide text-white shadow-[0_6px_14px_rgba(180,83,9,0.3)]">
+              <span className="block rounded-full border border-amber-200 bg-gradient-to-r from-amber-100 to-amber-200 px-2.5 py-1 text-[10px] font-semibold leading-none tracking-wide text-amber-700 shadow-[0_4px_10px_rgba(245,158,11,0.22)] dark:border-amber-200/40 dark:bg-gradient-to-r dark:from-amber-500 dark:to-amber-600 dark:text-white dark:shadow-[0_6px_14px_rgba(180,83,9,0.3)]">
                 即将结束
               </span>
             </div>
           ) : null}
           <Link
             href={`/p/${item.id}`}
-            className="relative block overflow-visible rounded-lg border border-zinc-200/90 bg-zinc-50/50 p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_10px_28px_rgba(0,0,0,0.10)] transition-colors hover:border-zinc-300 hover:bg-zinc-100/80 hover:shadow-[0_2px_5px_rgba(0,0,0,0.14),0_14px_30px_rgba(0,0,0,0.16)] dark:border-zinc-800 dark:bg-zinc-900/30 dark:shadow-[0_1px_2px_rgba(0,0,0,0.45),0_14px_32px_rgba(0,0,0,0.48)] dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60 dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.5),0_18px_36px_rgba(0,0,0,0.58)]"
+            className="relative block overflow-visible rounded-lg border border-zinc-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_8px_20px_rgba(15,23,42,0.08)] transition-colors hover:border-zinc-300 hover:bg-white hover:shadow-[0_2px_6px_rgba(15,23,42,0.08),0_14px_28px_rgba(15,23,42,0.12)] dark:border-zinc-800 dark:bg-zinc-900/30 dark:shadow-[0_1px_2px_rgba(0,0,0,0.45),0_14px_32px_rgba(0,0,0,0.48)] dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60 dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.5),0_18px_36px_rgba(0,0,0,0.58)]"
           >
             <h2
               className={`text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100 ${
@@ -86,13 +91,13 @@ export function ResourceExplorer({ items }: Props) {
               {item.title}
             </h2>
             {item.excerpt ? (
-              <p className="mt-1.5 break-words text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1.5 break-words text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
                 {item.excerpt}
               </p>
             ) : null}
             <time
               dateTime={item.lastEdited}
-              className="mt-2 block text-[11px] tabular-nums tracking-wide text-zinc-400"
+              className="mt-2 block text-[11px] tabular-nums tracking-wide text-zinc-500 dark:text-zinc-400"
             >
               {item.lastEdited.slice(0, 10)}
             </time>
@@ -132,6 +137,17 @@ export function ResourceExplorer({ items }: Props) {
         <p className="text-sm text-zinc-500">没有符合「{query.trim()}」的文章。</p>
       ) : (
         <div className="space-y-8">
+          <section>
+            <h2 className="mb-4 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              九块九专区
+            </h2>
+            {nineNineZone.length ? (
+              renderCards(nineNineZone)
+            ) : (
+              <p className="text-sm text-zinc-500">暂无九块九专区内容。</p>
+            )}
+          </section>
+
           <section>
             <h2 className="mb-4 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
               AGI大神推荐
