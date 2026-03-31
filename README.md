@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# How22 资源聚合
 
-## Getting Started
+Next.js 站点 + Notion 数据库作为内容源，适合部署到 **Vercel**，代码托管在 **GitHub**。
 
-First, run the development server:
+## 本地开发
 
 ```bash
+npm install
+cp .env.example .env.local
+# 填写 NOTION_TOKEN、NOTION_DATABASE_ID 后：
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+浏览器打开 [http://localhost:3000](http://localhost:3000)。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Notion 配置概要
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. 在 [My integrations](https://www.notion.so/my-integrations) 创建内部集成，复制 **Internal Integration Secret** → `NOTION_TOKEN`。
+2. 打开你的**数据库**页面 → **⋯** → **Connections** → 连接该集成（否则 API 无权访问）。
+3. 数据库页面 **⋯** → **Copy link**，链接中的 32 位 ID（可带连字符）→ `NOTION_DATABASE_ID`。
 
-## Learn More
+## 部署到 Vercel
 
-To learn more about Next.js, take a look at the following resources:
+1. 把本仓库推送到 GitHub。
+2. 在 [Vercel](https://vercel.com) 导入该仓库，框架选 Next.js（默认即可）。
+3. 在 Project → **Settings** → **Environment Variables** 中填入与 `.env.local` 相同的 `NOTION_TOKEN`、`NOTION_DATABASE_ID`（建议 Production / Preview 都加）。
+4. 重新部署。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 技术栈
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js 16（App Router）+ TypeScript + Tailwind CSS  
+- `@notionhq/client`：通过 `databases.retrieve` + `dataSources.query` 读取数据库行（适配 Notion API 新版本）
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+后续可逐步增加：字段映射、标签筛选、站内详情页、ISR 缓存等。
