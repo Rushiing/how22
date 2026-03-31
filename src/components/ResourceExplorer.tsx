@@ -56,7 +56,10 @@ export function ResourceExplorer({ items }: Props) {
 
   const renderCards = (list: ResourceItem[]) => (
     <ul className="list-none columns-1 gap-3 md:columns-3">
-      {list.map((item) => (
+      {list.map((item) => {
+        const showEndingSoon = !item.badgeText && isEndingSoon(item.promoEndAt);
+        const hasBadge = Boolean(item.badgeText) || showEndingSoon;
+        return (
         <li key={item.id} className="relative mb-3 break-inside-avoid min-w-0">
           {item.badgeText ? (
             <div className="pointer-events-none absolute right-3 top-3 z-20">
@@ -64,7 +67,7 @@ export function ResourceExplorer({ items }: Props) {
                 {item.badgeText}
               </span>
             </div>
-          ) : isEndingSoon(item.promoEndAt) ? (
+          ) : showEndingSoon ? (
             <div className="pointer-events-none absolute right-3 top-3 z-20">
               <span className="block rounded-full border border-amber-200/40 bg-gradient-to-r from-amber-500 to-amber-600 px-2.5 py-1 text-[10px] font-semibold leading-none tracking-wide text-white shadow-[0_6px_14px_rgba(180,83,9,0.3)]">
                 即将结束
@@ -75,7 +78,11 @@ export function ResourceExplorer({ items }: Props) {
             href={`/p/${item.id}`}
             className="relative block overflow-visible rounded-lg border border-zinc-200/90 bg-zinc-50/50 p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_10px_28px_rgba(0,0,0,0.10)] transition-colors hover:border-zinc-300 hover:bg-zinc-100/80 hover:shadow-[0_2px_5px_rgba(0,0,0,0.14),0_14px_30px_rgba(0,0,0,0.16)] dark:border-zinc-800 dark:bg-zinc-900/30 dark:shadow-[0_1px_2px_rgba(0,0,0,0.45),0_14px_32px_rgba(0,0,0,0.48)] dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60 dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.5),0_18px_36px_rgba(0,0,0,0.58)]"
           >
-            <h2 className="text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100">
+            <h2
+              className={`text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100 ${
+                hasBadge ? "pr-16" : ""
+              }`}
+            >
               {item.title}
             </h2>
             {item.excerpt ? (
@@ -91,7 +98,7 @@ export function ResourceExplorer({ items }: Props) {
             </time>
           </Link>
         </li>
-      ))}
+      )})}
     </ul>
   );
 
