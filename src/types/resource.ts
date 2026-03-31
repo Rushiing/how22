@@ -7,6 +7,11 @@ export type ResourceItem = {
   searchText: string;
   notionUrl: string;
   lastEdited: string;
+  section: string;
+  recommendType: string;
+  visible: boolean;
+  pinWeight: number;
+  promoEndAt: string;
 };
 
 export type ResourcesResult =

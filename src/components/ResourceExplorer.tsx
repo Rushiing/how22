@@ -13,9 +13,64 @@ export function ResourceExplorer({ items }: Props) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((item) => item.searchText.includes(q));
+    const visibleItems = items.filter((item) => item.visible !== false);
+    if (!q) return visibleItems;
+    return visibleItems.filter((item) => item.searchText.includes(q));
   }, [items, query]);
+
+  const { codingPlan, tokens, latestDeals } = useMemo(() => {
+    const agi = filtered.filter((item) => item.section === "AGI大神推荐");
+    const codingPlanItems = agi.filter((item) => item.recommendType === "Coding Plan");
+    const tokenItems = agi.filter((item) => item.recommendType === "Tokens");
+    // 分区三态：AGI大神推荐 / 最新优惠信息 / 空。空分区归入“最新优惠信息”。
+    const latest = filtered.filter((item) => item.section !== "AGI大神推荐");
+
+    const byWeightAndDate = (a: ResourceItem, b: ResourceItem) => {
+      const w = b.pinWeight - a.pinWeight;
+      if (w !== 0) return w;
+      return b.lastEdited.localeCompare(a.lastEdited);
+    };
+
+    const byDealDate = (a: ResourceItem, b: ResourceItem) => {
+      const ad = a.promoEndAt || a.lastEdited;
+      const bd = b.promoEndAt || b.lastEdited;
+      return bd.localeCompare(ad);
+    };
+
+    return {
+      codingPlan: [...codingPlanItems].sort(byWeightAndDate),
+      tokens: [...tokenItems].sort(byWeightAndDate),
+      latestDeals: [...latest].sort(byDealDate),
+    };
+  }, [filtered]);
+
+  const renderCards = (list: ResourceItem[]) => (
+    <ul className="list-none columns-1 gap-3 md:columns-3">
+      {list.map((item) => (
+        <li key={item.id} className="mb-3 break-inside-avoid min-w-0">
+          <Link
+            href={`/p/${item.id}`}
+            className="block rounded-lg border border-zinc-200/90 bg-zinc-50/50 p-3.5 transition-colors hover:border-zinc-300 hover:bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/30 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60"
+          >
+            <h2 className="text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100">
+              {item.title}
+            </h2>
+            {item.excerpt ? (
+              <p className="mt-1.5 break-words text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                {item.excerpt}
+              </p>
+            ) : null}
+            <time
+              dateTime={item.lastEdited}
+              className="mt-2 block text-[11px] tabular-nums tracking-wide text-zinc-400"
+            >
+              {item.lastEdited.slice(0, 10)}
+            </time>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="w-full">
@@ -46,31 +101,48 @@ export function ResourceExplorer({ items }: Props) {
       ) : filtered.length === 0 ? (
         <p className="text-sm text-zinc-500">没有符合「{query.trim()}」的文章。</p>
       ) : (
-        <ul className="grid list-none grid-cols-1 items-start gap-4 md:grid-cols-3">
-          {filtered.map((item) => (
-            <li key={item.id} className="min-w-0">
-              <Link
-                href={`/p/${item.id}`}
-                className="block rounded-lg border border-zinc-200/90 bg-zinc-50/50 p-4 transition-colors hover:border-zinc-300 hover:bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/30 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60"
-              >
-                <h2 className="text-[15px] font-medium leading-snug tracking-tight text-zinc-900 dark:text-zinc-100">
-                  {item.title}
-                </h2>
-                {item.excerpt ? (
-                  <p className="mt-2 break-words text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
-                    {item.excerpt}
-                  </p>
-                ) : null}
-                <time
-                  dateTime={item.lastEdited}
-                  className="mt-3 block text-[11px] tabular-nums tracking-wide text-zinc-400"
-                >
-                  {item.lastEdited.slice(0, 10)}
-                </time>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-8">
+          <section>
+            <h2 className="mb-4 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              AGI大神推荐
+            </h2>
+
+            <div className="space-y-5">
+              <div>
+                <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  Coding Plan 推荐
+                </h3>
+                {codingPlan.length ? (
+                  renderCards(codingPlan)
+                ) : (
+                  <p className="text-sm text-zinc-500">暂无 Coding Plan 推荐。</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  Tokens 推荐
+                </h3>
+                {tokens.length ? (
+                  renderCards(tokens)
+                ) : (
+                  <p className="text-sm text-zinc-500">暂无 Tokens 推荐。</p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-4 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              最新优惠信息
+            </h2>
+            {latestDeals.length ? (
+              renderCards(latestDeals)
+            ) : (
+              <p className="text-sm text-zinc-500">暂无最新优惠信息。</p>
+            )}
+          </section>
+        </div>
       )}
     </div>
   );
