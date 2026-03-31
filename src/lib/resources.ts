@@ -61,6 +61,26 @@ function dateStart(prop: unknown): string {
   return p.type === "date" ? p.date?.start?.trim() ?? "" : "";
 }
 
+function textValue(prop: unknown): string {
+  if (!prop || typeof prop !== "object" || !("type" in prop)) return "";
+  const p = prop as {
+    type: string;
+    rich_text?: Array<{ plain_text?: string }>;
+    title?: Array<{ plain_text?: string }>;
+    select?: { name?: string } | null;
+    status?: { name?: string } | null;
+  };
+  if (p.type === "rich_text" && Array.isArray(p.rich_text)) {
+    return p.rich_text.map((t) => t.plain_text ?? "").join("").trim();
+  }
+  if (p.type === "title" && Array.isArray(p.title)) {
+    return p.title.map((t) => t.plain_text ?? "").join("").trim();
+  }
+  if (p.type === "select") return p.select?.name?.trim() ?? "";
+  if (p.type === "status") return p.status?.name?.trim() ?? "";
+  return "";
+}
+
 export async function getResources(): Promise<ResourcesResult> {
   if (!isNotionConfigured()) {
     return { status: "not_configured", items: [] };
@@ -102,6 +122,7 @@ export async function getResources(): Promise<ResourcesResult> {
       const visible = checkboxValue(page.properties["是否展示"]);
       const pinWeight = numberValue(page.properties["置顶权重"]);
       const promoEndAt = dateStart(page.properties["优惠结束时间"]);
+      const badgeText = textValue(page.properties["角标"]);
 
       return {
         id: page.id,
@@ -115,6 +136,7 @@ export async function getResources(): Promise<ResourcesResult> {
         visible,
         pinWeight,
         promoEndAt,
+        badgeText,
       };
     });
 

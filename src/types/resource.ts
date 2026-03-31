@@ -12,6 +12,7 @@ export type ResourceItem = {
   visible: boolean;
   pinWeight: number;
   promoEndAt: string;
+  badgeText: string;
 };
 
 export type ResourcesResult =
